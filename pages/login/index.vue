@@ -3,11 +3,9 @@
 </script>
 
 <template>
-  <nuxt-layout name="login">
-    <login-card></login-card>
+  <nuxt-layout name="default">
+    <client-only>
+      <login-card></login-card>
+    </client-only>
   </nuxt-layout>
 </template>
-
-<style scoped>
-
-</style>

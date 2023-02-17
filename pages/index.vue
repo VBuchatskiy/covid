@@ -1,16 +1,19 @@
 <script setup lang="ts">
-  import { useStore } from "@/store/store";
-  import CovidList from "@/components/CovidList.vue"
+import { useCovidStore } from "~~/store/covid";
+import CovidList from "@/components/CovidList.vue"
 
-  const store = useStore()
+const { getCovidReport } = useCovidStore()
 
-  await store.getCovid()
+definePageMeta({
+  middleware: ["auth"]
+})
+
+await getCovidReport(true)
+
 </script>
 
 <template>
-  <nuxt-layout name="login">
-      <covid-list v-bind="{
-        item: store.item
-      }"></covid-list>
+  <nuxt-layout name="default">
+    <covid-list></covid-list>
   </nuxt-layout>
 </template>

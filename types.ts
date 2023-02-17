@@ -11,3 +11,8 @@ export interface ICovid {
   active_diff: number;
   fatality_rate: number;
 }
+
+export interface ICredentials {
+  username: string,
+  password: string
+}

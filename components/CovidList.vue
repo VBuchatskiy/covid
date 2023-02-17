@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import { useStore } from "@/store/store";
-import { ICovid } from "~~/api/types";
+import { useCovidStore } from "~~/store/covid";
+import { TCovidView } from "~~/store/covid"
+import { storeToRefs } from "pinia";
 
-export type TCovidHeaders = keyof ICovid
+const store = useCovidStore()
 
-const store = useStore()
-const headers: TCovidHeaders[] = [
-  'confirmed_diff', 'date', 'deaths_diff', 'active_diff'
-]
+const { item } = storeToRefs(store)
 
-const item = ref<ICovid | null>(store.item?.data || null)
+const onRefresh = async () => {
+  await store.getCovidReports()
+}
 
+onMounted(async() => {
+  await store.getCovidReports()
+})
 
 </script>
 
@@ -19,33 +21,49 @@ const item = ref<ICovid | null>(store.item?.data || null)
   <section>
     <header>
       <h5> 
-        Covid 19 
+        Covid 19
       </h5>
     </header>
     <main>
       <table>
-        <thead>
-          <tr>
-            <template v-for="header of headers">
+        <template v-if="item">
+          <thead>
+            <tr>
+              <template v-for="header of Object.keys(item)">
+                  <th> 
+                    {{ header }} 
+                  </th>
+              </template>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <template v-if="item" v-for="header of Object.keys(item)">
                 <th> 
-                  {{ header }} 
+                  {{ item[header as keyof TCovidView] }} 
                 </th>
-            </template>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <template v-if="item" v-for="header of headers">
-              <th> 
-                {{ item[header] }} 
+              </template>
+            </tr>
+          </tbody>
+        </template>
+        <template v-else>
+          <tbody>
+            <tr>
+              <th>
+                No data
               </th>
-            </template>
-          </tr>
-        </tbody>
+            </tr>
+          </tbody>
+        </template>
       </table>
     </main>
     <footer>
-      <button> refresh </button>
+      <button
+        v-on="{
+          click: onRefresh
+        }"> 
+          refresh 
+      </button>
     </footer>
   </section>
 </template>

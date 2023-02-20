@@ -8,9 +8,14 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+<<<<<<< HEAD
     "dayjs": "^1.11.7",
     "pinia": "^2.0.30",
     "vee-validate": "^4.7.4"
+=======
+    "pinia": "^2.0.30",
+    "pinia-plugin-persistedstate": "^3.0.2"
+>>>>>>> main
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.4.0",

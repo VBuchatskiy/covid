@@ -2,31 +2,55 @@ import { defineStore } from 'pinia'
 import { ref } from "vue"
 import { ICovid } from "~/types"
 
-export type TCovidView = Pick<ICovid, 'confirmed_diff' | 'date' | 'deaths_diff' | 'active_diff'>
-
 export const useCovidStore = defineStore('covid', () => {
-  const item = ref<TCovidView | null>(null)
+  const items = ref<{ data: ICovid }[] | null>(null)
   const loading = ref<boolean>(false)
 
-  const getCovidReports = async () => {
+  const getCovidReport = async (persistent?: boolean) => {
     loading.value = true
 
+    const storage = localStorage.getItem('items')
+
+    if (storage && persistent) {
+      items.value = JSON.parse(storage)
+      loading.value = false
+      return
+    }
+
+    // TODO make wrapper with config
     const { data, error, pending } = await useFetch('/reports',
       {
         headers: {
           'Authorization': JSON.parse(localStorage.getItem('token') || "")?.token || ""
         },
-        pick: ['confirmed_diff', 'date', 'deaths_diff', 'active_diff']
       },
     )
 
     if (error.value) {
+      loading.value = false
       throw error.value
     }
 
-    item.value = data.value
+    localStorage.setItem('items', JSON.stringify(data.value))
+
+    items.value = data.value
     loading.value = pending.value
   }
 
-  return { item, getCovidReports }
+  const removeCovidReport = async (index: number) => {
+    loading.value = true
+
+    // TODO add remove on server
+    items.value = items.value?.filter((item, $index) => index !== $index) || items.value
+
+    localStorage.setItem('items', JSON.stringify(items.value))
+
+    if (!items.value?.length) {
+      localStorage.removeItem('items')
+    }
+
+    loading.value = false
+  }
+
+  return { items, loading, getCovidReport, removeCovidReport }
 })

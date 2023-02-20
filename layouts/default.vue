@@ -6,8 +6,13 @@
           </client-only>
         </div>
       <template v-slot:fallback>
-        <!-- this will be rendered on server side -->
-        <p>Loading comments...</p>
+        <client-only>
+          <section class="flex w-full content-center items-center min-h-screen">
+            <p class="text-white text-center">
+              Loading Page
+            </p>
+          </section>
+        </client-only>
       </template>
     </client-only>
 </template>

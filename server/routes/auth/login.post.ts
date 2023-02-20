@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
 
   if (!data?.username || !data?.password) {
     throw createError({
-      statusCode: 400,
+      statusCode: 403,
       message: 'Invalid credentials'
     })
   }

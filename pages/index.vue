@@ -1,9 +1,15 @@
 <script setup lang="ts">
-  import CovidList from "@/components/CovidList.vue"
+import { useCovidStore } from "~~/store/covid";
+import CovidList from "@/components/CovidList.vue"
 
-  definePageMeta({
-    middleware: ["auth"]
-  })
+const { getCovidReport } = useCovidStore()
+
+definePageMeta({
+  middleware: ["auth"]
+})
+
+await getCovidReport(true)
+
 </script>
 
 <template>

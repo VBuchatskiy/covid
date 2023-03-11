@@ -3,70 +3,93 @@ import { storeToRefs } from "pinia";
 import { useCovidStore } from "~~/store/covid";
 import { ICovid } from "~~/types";
 
-type TCovidView = Pick<ICovid, 'confirmed_diff' | 'date' | 'deaths_diff' | 'active_diff'>
-type TCovidHeader = keyof TCovidView
+type TCovidView = Pick<
+  ICovid,
+  "confirmed_diff" | "date" | "deaths_diff" | "active_diff"
+>;
+type TCovidHeader = keyof TCovidView;
 
-const store = useCovidStore()
-const { items, loading }  = storeToRefs(store)
+const store = useCovidStore();
+const { items, loading } = storeToRefs(store);
 
-const headers: TCovidHeader[] = ['confirmed_diff', 'date', 'deaths_diff', 'active_diff']
+const headers: TCovidHeader[] = [
+  "confirmed_diff",
+  "date",
+  "deaths_diff",
+  "active_diff",
+];
 
 const onRefresh = async () => {
-  await store.getCovidReport()
-}
+  await store.getCovidReport();
+};
 
 const onDelete = async (index: number) => {
-  // TODO replace with new map for id
-  await store.removeCovidReport(index)
-}
-
+  await store.removeCovidReport(index);
+};
 </script>
 
 <template>
   <section class="min-h-screen flex flex-col justify-center items-center">
-    <header  class="w-full font-medium font-sans text-2xl mb-2 text-white">
-      <h5>
-        Covid 19
-      </h5>
+    <header class="w-full font-medium font-sans text-2xl mb-2 text-white">
+      <h5>Covid 19</h5>
     </header>
-   
+
     <table class="w-full font-sans text-md text-slate-700 mb-2">
       <template v-if="!loading">
         <thead>
           <tr>
-            <template v-for="header of headers">
-              <th class="capitalize font-sans text-md p-1 text-slate-300 border-2 border-slate-500 rounded-md">
-                {{ header.replace('_', ' ') }}
+            <template
+              v-for="header of headers"
+              :key="header"
+            >
+              <th
+                class="capitalize font-sans text-md p-1 text-slate-300 border-2 border-slate-500 rounded-md"
+              >
+                {{ header.replace("_", " ") }}
               </th>
             </template>
-            <th class="capitalize font-sans text-md p-1 text-slate-300 border-2 border-slate-500 rounded-md">
+            <th
+              class="capitalize font-sans text-md p-1 text-slate-300 border-2 border-slate-500 rounded-md"
+            >
               Actions
             </th>
           </tr>
         </thead>
         <tbody>
-          <template v-if="items && items.length" v-for="(item, index) of items">
-            <tr class="text-center">
-              <template v-for="header of headers">
-                <td class="border-2 border-slate-500 font-sans text-md text-slate-300 rounded-md">
-                  {{ item.data[header as keyof TCovidView] }}
+          <template v-if="items && items.length">
+            <template
+              v-for="(item, index) of items"
+              :key="index"
+            >
+              <tr class="text-center">
+                <template
+                  v-for="header of headers"
+                  :key="item.data[header]"
+                >
+                  <td
+                    class="border-2 border-slate-500 font-sans text-md text-slate-300 rounded-md"
+                  >
+                    {{ item.data[header] }}
+                  </td>
+                </template>
+                <td
+                  class="border-2 border-slate-500 font-sans text-md text-slate-300 rounded-md"
+                >
+                  <base-button
+                    class="bg-transparent"
+                    v-on="{
+                      click: () => onDelete(index),
+                    }"
+                  >
+                    Delete
+                  </base-button>
                 </td>
-              </template>
-              <td class="border-2 border-slate-500 font-sans text-md text-slate-300 rounded-md">
-                <!-- TODO update button component -->
-                <base-button class="bg-transparent" v-on="{
-                  click: () => onDelete(index)
-                }"> 
-                  Delete 
-                </base-button>
-              </td>
-            </tr>
+              </tr>
+            </template>
           </template>
           <template v-else>
             <tr class="text-white text-center">
-              <span>
-                No data
-              </span>
+              <span> No data </span>
             </tr>
           </template>
         </tbody>
@@ -83,17 +106,17 @@ const onDelete = async (index: number) => {
         </tbody>
       </template>
     </table>
-   
+
     <footer class="w-full flex justify-end">
       <base-button
         v-bind="{
           disabled: loading,
         }"
         v-on="{
-          click: onRefresh
+          click: onRefresh,
         }"
       >
-        <template v-slot:default>
+        <template #default>
           Refresh
         </template>
       </base-button>
